@@ -3,12 +3,10 @@ function solveEquation(a, b, c) {
   let arr = [];
   const discriminant = b ** 2 - 4 * a * c;
 
-  if (discriminant < 0) {
-    return arr;
-  } else if (discriminant === 0) {
+  if (discriminant === 0) {
     const root = -b / (2 * a);
     arr.push(root);
-  } else {
+  } else if (discriminant > 0) {
     const sqrtD = Math.sqrt(discriminant);
     const root1 = (-b + sqrtD) / (2 * a);
     const root2 = (-b - sqrtD) / (2 * a);
@@ -28,6 +26,6 @@ function calculateTotalMortgage(percent, contribution, amount, countMonths) {
   }
 
   let monthlyPayment = loanBody * (monthlyRate + (monthlyRate / (Math.pow(1 + monthlyRate, countMonths) - 1)));
-  let totalAmount = monthlyPayment * countMonths + contribution;
+  let totalAmount = monthlyPayment * countMonths;
   return Number(totalAmount.toFixed(2));
 }
