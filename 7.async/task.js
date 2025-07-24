@@ -9,12 +9,10 @@ class AlarmClock {
             throw new Error("Отсутствуют обязательные аргументы");
         }
 
-        let alreadyExists = false;
-        for (let i = 0; i < this.alarmCollection.length; i++) {
-            if (this.alarmCollection[i].time === time) {
-                alreadyExists = true;
-                console.warn("Уже присутствует звонок на это же время");
-            }
+        if (this.alarmCollection.some(function (alarm) {
+            return alarm.time === time;
+        })) {
+            console.warn("Уже присутствует звонок на это же время");
         }
 
         this.alarmCollection.push({
@@ -25,16 +23,12 @@ class AlarmClock {
     }
 
     removeClock(time) {
-        let newCollection = [];
-        for (let i = 0; i < this.alarmCollection.length; i++) {
-            if (this.alarmCollection[i].time !== time) {
-                newCollection.push(this.alarmCollection[i]);
-            }
-        }
-        this.alarmCollection = newCollection;
+        this.alarmCollection = this.alarmCollection.filter(function (alarm) {
+            return alarm.time !== time;
+        });
     }
 
-    getCurrentFormattedTime () {
+    getCurrentFormattedTime() {
         let now = new Date();
         let hours = now.getHours();
         let minutes = now.getMinutes();
@@ -57,32 +51,30 @@ class AlarmClock {
         this.intervalId = setInterval(() => {
             let currentTime = this.getCurrentFormattedTime();
 
-            for (let i = 0; i < this.alarmCollection.length; i++) {
-                let alarm = this.alarmCollection[i];
-
+            this.alarmCollection.forEach(function (alarm) {
                 if (alarm.time === currentTime && alarm.canCall === true) {
                     alarm.canCall = false;
                     alarm.callback();
                 }
-            }
+            })
         }, 1000);
-    }
+}
 
-    stop() {
-        if (this.intervalId !== null) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
-        }
+stop() {
+    if (this.intervalId !== null) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
     }
+}
 
-    resetAllCalls() {
-        for (let i = 0; i < this.alarmCollection.length; i++) {
-            this.alarmCollection[i].canCall = true;
-        }
-    }
+resetAllCalls() {
+    this.alarmCollection.forEach(function(alarm) {
+        alarm.canCall = true;
+    });
+}
 
-    clearAlarms() {
-        this.stop();
-        this.alarmCollection = [];
-    }
+clearAlarms() {
+    this.stop();
+    this.alarmCollection = [];
+}
 }
